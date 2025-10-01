@@ -1,11 +1,47 @@
-import Header from "../../components/layout/Header";
-import Footer from "../../components/layout/Footer";
-import PostCard from "../../components/common/PostCard";
-import { PostProps } from "../../interfaces";
+import PostCard from "@/components/common/PostCard";
+import PostModal from "@/components/common/PostModal";
+import Header from "@/components/layout/Header";
+import { PostData, PostProps } from "@/interfaces";
+import { useState } from "react";
+
+const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [postList, setPostList] = useState<PostProps[]>(posts);
+
+  const handleAddPost = (newPost: PostData) => {
+    setPostList([...postList, { ...newPost, id: postList.length + 1 }]);
+  };
+
+  return (
+    <div className="flex flex-col h-screen">
+      <Header />
+      <main className="p-4">
+        <div className="flex justify-between">
+          <h1 className="text-2xl font-semibold">Post Content</h1>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="bg-blue-700 px-4 py-2 rounded-full text-white"
+          >
+            Add Post
+          </button>
+        </div>
+        <div className="grid grid-cols-3 gap-4 mt-4">
+          {postList?.map(({ title, body, userId, id }: PostProps, key: number) => (
+            <PostCard title={title} body={body} userId={userId} id={id} key={key} />
+          ))}
+        </div>
+      </main>
+
+      {isModalOpen && (
+        <PostModal onClose={() => setModalOpen(false)} onSubmit={handleAddPost} />
+      )}
+    </div>
+  );
+};
 
 export async function getStaticProps() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const posts: PostProps[] = await res.json();
+  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+  const posts = await response.json();
 
   return {
     props: {
@@ -14,25 +50,4 @@ export async function getStaticProps() {
   };
 }
 
-const PostsPage: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
-  return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1 p-6">
-        <h1 className="text-3xl font-bold mb-4">Posts</h1>
-        {posts.slice(0, 10).map((post) => (
-          <PostCard
-            key={post.id}
-            userId={post.userId}
-            id={post.id}
-            title={post.title}
-            body={post.body}
-          />
-        ))}
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-export default PostsPage;
+export default Posts;
