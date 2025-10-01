@@ -1,6 +1,12 @@
-export interface PostProps {
-  userId: number;
+export interface UserProps {
   id: number;
-  title: string;
-  body: string;
+  name: string;
+  username: string;
+  email: string;
+  address: {
+    street: string;
+  };
+  company: {
+    catchPhrase: string;
+  };
 }
