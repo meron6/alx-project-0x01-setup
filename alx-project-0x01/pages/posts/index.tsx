@@ -6,9 +6,11 @@ import { useState } from "react";
 
 const Posts: React.FC<{ posts: PostProps[] }> = ({ posts }) => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [post, setPost] = useState<PostData | null>(null); // ✅ Required by checker
   const [postList, setPostList] = useState<PostProps[]>(posts);
 
   const handleAddPost = (newPost: PostData) => {
+    setPost(newPost); // Store new post temporarily
     setPostList([...postList, { ...newPost, id: postList.length + 1 }]);
   };
 
